@@ -18,6 +18,7 @@ int partition(void *array[], int, int);
 int compare(void*, void*);
 void printSomething(Employee, int);
 
+//Main calling function
 int main(void) {
  	srand(time(NULL));
 
@@ -47,7 +48,9 @@ int main(void) {
  
  	return 0;
 }
+//END OF MAIN 
 
+//BEGGINING OF FUNCTIONS
 
 void readfile(Employee employeeList[]){
     FILE *fp;
