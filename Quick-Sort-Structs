@@ -1,0 +1,142 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#define ARR_SIZE 10000
+//structure to be loaded with data from FILE "employeeData.csv"
+typedef struct employee{
+        char fname[25], lname[25];          //first name and last name of an employee
+        int age;
+        int salary;
+}Employee;
+
+//prototype declaration
+void readfile(Employee employeeList[]);
+int randomGenerator(int, int);
+void quickSort(void *array[], int, int);
+int partition(void *array[], int, int);
+int compare(void*, void*);
+void printSomething(Employee, int);
+
+int main(void) {
+ 	srand(time(NULL));
+
+    Employee employeeList[ARR_SIZE];
+    readfile(employeeList);
+ 
+    Employee *employeeListPtr[ARR_SIZE];
+    for (int i=0; i < ARR_SIZE; i++){
+        employeeListPtr[i] = &employeeList[i];
+    }
+ 
+    //Uncomment the line below to test quicksort
+    quickSort((void**)employeeListPtr, 0, ARR_SIZE-1);
+ 	int size = 25;
+ 
+ 	printf("First 25 after quicksort:\n");
+ 	for(int i=0; i<size;i++)
+    {
+    printf("%10s  %10s   %2d    %5d\n", employeeListPtr[i]->fname, employeeListPtr[i]->lname, employeeListPtr[i]->age, employeeListPtr[i]->salary);
+    }
+ 
+ 	printf("last 25 after quicksort:\n");
+ 	for(int i = 9974; i < ARR_SIZE; i++)
+  {
+  printf("%10s  %10s   %2d    %5d\n", employeeListPtr[i]->fname, employeeListPtr[i]->lname, employeeListPtr[i]->age, employeeListPtr[i]->salary);
+  }
+ 
+ 	return 0;
+}
+
+
+void readfile(Employee employeeList[]){
+    FILE *fp;
+    fp = fopen("employeeData.csv", "r");
+    int i = 0;
+    if (fp) {
+        while (i<10000){
+            fscanf(fp, "%[^,],%[^,],%d,%d\n",employeeList[i].fname,employeeList[i].lname,&employeeList[i].age,&employeeList[i].salary);
+            i++;
+        }
+    }
+    else{
+        printf("Cannot find file\n");
+    }
+
+    fclose(fp);
+}
+
+
+int randomGenerator(int low, int high){
+ 
+ 	return (rand() % (high + 1 - low) + low);
+ 
+}
+
+
+void swap(void* object1, void* object2) //accepts generic data types, converts to type Employee* and swaps with temp Var
+{
+ Employee *n, *m, t;
+ m = (Employee*)object1;
+ n = (Employee*)object2; 
+ 
+    t = *m;
+    *m = *n;
+    *n = t;
+}
+
+//Partition takes a employee struct, low and high values for array and picks a random value to pivot around
+
+int partition (void *employeeList[], int low, int high)
+{
+ 	
+    int pivot = randomGenerator(low, high);  // pivot	
+    int i = (low - 1);  // Index of smaller element
+ 	  swap(employeeList[pivot], employeeList[high]);	
+ 	  pivot = high;		
+                                           
+    for (int j = low; j <= high- 1; j++)
+    {
+        // If current element is smaller than or
+        // equal to pivot
+        if ( compare( employeeList[j], employeeList[pivot]) > 0)
+        {
+         	
+            i++;    // increment index of smaller element
+         	
+            swap(employeeList[i], employeeList[j]);
+         	
+        }
+    }
+ 	
+    swap(employeeList[i + 1], employeeList[high]);
+    return (i + 1);
+}
+ 
+
+void quickSort(void* employeeList[], int low, int high)
+{
+    if (low < high)
+    {
+        
+        int pi = partition(employeeList, low, high);
+ 
+       
+        quickSort(employeeList, low, pi - 1);
+        quickSort(employeeList, pi + 1, high);
+    }
+}
+ 
+
+int compare(void* object1, void* object2)//generic compare function that converts to type employee and compares the salaries from the structs
+{ 
+
+ Employee n, m;
+ m = (*(Employee*)object1);
+ n = (*(Employee*) object2); 
+ if(m.salary>n.salary)return -1;
+ else if(m.salary<n.salary)return 1;
+ 
+ 	return(0);
+}
+
